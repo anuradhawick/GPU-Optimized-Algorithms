@@ -4,18 +4,19 @@ import com.aparapi.Kernel;
 import com.aparapi.Range;
 
 /**
- * Created by anuradhawick on 12/29/17.
+ * Created by anuradhawick on 12/31/17.
+ * <p>
+ * Note: Only supports square matrices. MxN matrix would require a small adjustment taking SIZE into two portions
+ * row Size and col Size
  */
 @SuppressWarnings("Duplicates")
-public class MatrixMultiplication {
-
+public class MatrixTranspose {
     public static void main(String[] args) {
         // Width of the matrix
-        final int SIZE = 1000;
+        final int SIZE = 12000;
 
         // We should use linear arrays as supported by the API
         final int[] a = new int[SIZE * SIZE];
-        final int[] b = new int[SIZE * SIZE];
         int[] c = new int[SIZE * SIZE];
         final int[] d = new int[SIZE * SIZE];
         int val;
@@ -24,20 +25,15 @@ public class MatrixMultiplication {
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 a[i * SIZE + j] = (int) (Math.random() * 100);
-                b[i * SIZE + j] = (int) (Math.random() * 100);
             }
         }
         long time = System.currentTimeMillis();
 
-        // CPU multiplication
+        // CPU Transpose
         System.out.println("Starting single threaded computation");
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                val = 0;
-                for (int k = 0; k < SIZE; k++) {
-                    val += readMatrix(i, k, SIZE, a) * readMatrix(k, j, SIZE, b);
-                }
-                writeMatrix(i, j, SIZE, c, val);
+                writeMatrix(i, j, SIZE, c, readMatrix(j, i, SIZE, a));
             }
         }
         System.out.println("Task finished in " + (System.currentTimeMillis() - time) + "ms");
@@ -57,16 +53,10 @@ public class MatrixMultiplication {
             public void run() {
                 int row = getGlobalId() / SIZE;
                 int col = getGlobalId() % SIZE;
-                int temp;
 
                 if (row > SIZE || col > SIZE) return;
 
-                writeMatrix(row, col, SIZE, d, 0);
-
-                for (int i = 0; i < SIZE; i++) {
-                    temp = readMatrix(row, col, SIZE, d) + readMatrix(row, i, SIZE, a) * readMatrix(i, col, SIZE, b);
-                    writeMatrix(row, col, SIZE, d, temp);
-                }
+                writeMatrix(row, col, SIZE, d, readMatrix(col, row, SIZE, a));
             }
         };
 
