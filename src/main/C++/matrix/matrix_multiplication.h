@@ -1,4 +1,6 @@
-// CUDA kernel. Each thread takes care of one element of c
+#include "../matlib/gpumat.h"
+
+// CUDA kernel.
 __global__ void matMulGPU(Matrix A, Matrix B, Matrix C, int N) {
 	// Get our global thread IDs
 	int row = blockIdx.y * blockDim.y + threadIdx.y;
@@ -9,9 +11,9 @@ __global__ void matMulGPU(Matrix A, Matrix B, Matrix C, int N) {
 		return;
 	int cVal = 0;
 	for (int i = 0; i < N; ++i) {
-		cVal += A.elements[row * N + i] * B.elements[i * N + col];
+		cVal += readGMat(A, row, i) * readGMat(B, i, col);
 	}
-	C.elements[row * N + col] = cVal;
+	writeGMat(C, row, col, cVal);
 }
 
 void matMulCPU(Matrix A, Matrix B, Matrix C, int N) {

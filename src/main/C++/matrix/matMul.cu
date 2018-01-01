@@ -4,12 +4,7 @@
 #include <time.h>
 #include <sys/time.h>
 
-typedef struct {
-	int width;
-	int height;
-	int* elements;
-} Matrix;
-
+#include "../matlib/matrix.h"
 #include "matrix_multiplication.h"
 
 int main(int argc, char* argv[]) {
@@ -19,10 +14,7 @@ int main(int argc, char* argv[]) {
 	struct timeval start, end;
 
 	// =====================================
-	Matrix h_A;
-	h_A.width = SIZE;
-	h_A.height = SIZE;
-	h_A.elements = (int*) malloc(size);
+	Matrix h_A = getRandomMatrix(SIZE, SIZE);
 
 	Matrix d_A;
 	d_A.width = SIZE;
@@ -30,42 +22,23 @@ int main(int argc, char* argv[]) {
 
 	// =====================================
 
-	Matrix h_B;
-	h_B.width = SIZE;
-	h_B.height = SIZE;
-	h_B.elements = (int*) malloc(size);
+	Matrix h_B = getRandomMatrix(SIZE, SIZE);
 
 	Matrix d_B;
 	d_B.width = SIZE;
 	d_B.height = SIZE;
-	d_B.elements = (int*) malloc(size);
 
 	// =====================================
 
-	Matrix h_C;
-	h_C.width = SIZE;
-	h_C.height = SIZE;
-	h_C.elements = (int*) malloc(size);
+	Matrix h_C = mallocMatrix(SIZE, SIZE);
 
 	// Answer from CUDA
-	Matrix h_dC;
-	h_dC.width = SIZE;
-	h_dC.height = SIZE;
-	h_dC.elements = (int*) malloc(size);
+	Matrix h_dC = mallocMatrix(SIZE, SIZE);
 
 	// Answer from CPU
 	Matrix d_C;
 	d_C.width = SIZE;
 	d_C.height = SIZE;
-	d_C.elements = (int*) malloc(size);
-
-	// Initialize vectors on host
-	for (int i = 0; i < SIZE; i++) {
-		for (int j = 0; j < SIZE; ++j) {
-			h_A.elements[i * SIZE + j] = rand() % 10;
-			h_B.elements[i * SIZE + j] = rand() % 10;
-		}
-	}
 
 	// Perform CPU calculation
 	gettimeofday(&start, NULL);
