@@ -22,9 +22,9 @@ void matMulCPU(Matrix A, Matrix B, Matrix C, int N) {
 		for (int j = 0; j < N; ++j) {
 			cVal = 0;
 			for (int k = 0; k < N; ++k) {
-				cVal += A.elements[i * N + k] * B.elements[k * N + j];
+				cVal += readMatrix(A, i, k) * readMatrix(B, k, j);
 			}
-			C.elements[i * N + j] = cVal;
+			writeMatrix(C, i, j, cVal);
 		}
 	}
 }
